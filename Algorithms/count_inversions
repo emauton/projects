@@ -1,0 +1,53 @@
+#!/usr/bin/python
+
+# Programming question week 1, http://www.algo-class.org/ June 2012.
+
+# Given a file containing all of the 100,000 integers between
+# 1 and 100,000 (inclusive) in some random order, with no integer
+# repeated, count the number of inversions in the input, i.e.
+# the number of pairs (i, j) of indices with i < j and A[i] > A[j].
+
+import sys
+
+def CountInversions(array):
+  n = len(array)
+  if n <= 1:
+    return (0, array)
+
+  L = array[0:n/2]
+  R = array[n/2:]
+
+  (L_inversions, L) = CountInversions(L)
+  (R_inversions, R) = CountInversions(R)
+
+  output = []
+  inversions = 0
+  i = 0
+  j = 0
+
+  for k in range(0, n):
+    if L[i] < R[j]:
+      output.append(L[i])
+      i += 1
+    else:
+      output.append(R[j])
+      j += 1
+      inversions += len(L) - i
+
+    if i == len(L):
+      output.extend(R[j:])
+      break
+
+    if j == len(R):
+      output.extend(L[i:])
+      break
+
+  return (L_inversions + R_inversions + inversions, output)
+
+f = open(sys.argv[1])
+
+array = [int(l) for l in f.readlines()]
+
+(inversions, sorted) = CountInversions(array)
+
+print inversions, sorted

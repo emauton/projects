@@ -1,0 +1,335 @@
+{
+  "hvkjP6dqpfY" : { "name" : "The Dark Room",
+                    "link" : { "GO NORTH" : "X6PD4IUlCwo", 
+                               "TURN ON LIGHT SWITCH" : "-WG36-XrcU4",
+                               "SLEEP" : "lsteokF2w8Q", 
+                               "WHY?" : "PPifzjxTahY" } },
+
+  "X6PD4IUlCwo" : { "name" : "NORTH",
+                    "link" : { "FIND LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "CHECK POCKETS" : "tjxmverY9uA",
+                               "CHUCK POCKETS" : "RnI_7dfhL1A" } },
+
+  "-WG36-XrcU4" : { "name" : "Delight",
+                    "link" : { "GO NORTH" : "X6PD4IUlCwo",
+                               "WITH MY FINGER" : "C-GPOhRRSgc",
+                               "LOOK FOR LIGHT SWITCH" : "KvDr5agcDiI" } },
+
+  "KvDr5agcDiI" : { "name" : "Look",
+                    "link" : { "FIND LIGHT SWITCH" : "F09kP2A_Cbg" } },
+
+  "F09kP2A_Cbg" : { "name" : "Find",
+                    "link" : { "I SEE" : "74lPVt0Kdb4",
+                               "I DON'T SEE" : "BrUT8TYUP9g" } },
+
+  "74lPVt0Kdb4" : { "name" : "I See",
+                    "link" : { "LISTEN TO LIGHT SWITCH?" : "toaYpx5EnkU",
+                               "TOUCH WALL" : "5jN7f9jLE7Y" } },
+
+  "BrUT8TYUP9g" : { "name" : "I Don't See",
+                    "link" : { "FIND LIGHT SWITCH" : "F09kP2A_Cbg" } },
+
+  "toaYpx5EnkU" : { "name" : "Listen",
+                    "link" : { "TOUCH WALL" : "5jN7f9jLE7Y",
+                               "KILL SELF" : "R8xou64tSNE" } },
+
+  "5jN7f9jLE7Y" : { "name" : "Touch Wall",
+                    "link" : { "TOUCH OTHER WALL" : "UudH7-3dF4g" } },
+
+  "R8xou64tSNE" : { "name" : "45",
+                    "link" : { "HOLD BREATH" : "UISc1Y1JEDI",
+                               "LEAN ON WALL AND WEEP" : "UNQSBQ7akyw",
+                               "WEEP" : "cxY9Ssv3ZT8",
+                               "SING" : "IQsqZx6R5HA" } },
+
+  "lsteokF2w8Q" : { "name" : "Sleep",
+                    "link" : { "CHECK POCKETS" : "tjxmverY9uA",
+                               "CZECH POCKETS" : "6vl6H-ORpV8",
+                               "LOOK FOR LIGHT SWITCH" : "KvDr5agcDiI" } },
+
+  "PPifzjxTahY" : { "name" : "3",
+                    "link" : { "SLEEP" : "lsteokF2w8Q",
+                               "GO NORTH" : "X6PD4IUlCwo",
+                               "TURN ON LIGHT SWITCH" : "-WG36-XrcU4" } },
+
+  "UISc1Y1JEDI" : { "name" : "A New Beginning",
+                    "link" : { "PASS TIME" : "4wletuFhuaY",
+                               "SLEEP" : "lsteokF2w8Q",
+                               "LOOK FOR LIGHT SWITCH" : "KvDr5agcDiI",
+                               "GO NORTH" : "X6PD4IUlCwo" } },
+
+  "cxY9Ssv3ZT8" : { "name" : "Weeping",
+                    "link" : { "FIND LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "EXIT" : "p44cvgYfajA" } },
+
+  "p44cvgYfajA" : { "name" : "666",
+                    "link" : { "UNPLUG COMPUTER" : "igzPyd_L4oc" } },
+
+  "igzPyd_L4oc" : { "name" : "Failure 1 Smiley Face",
+                    "link" : { } },
+
+  "IQsqZx6R5HA" : { "name" : "No",
+                    "link" : { "FIND THE LIGHT SWITCH" : "F09kP2A_Cbg" } },
+
+  "RnI_7dfhL1A" : { "name" : "1409",
+                    "link" : { "TOUCH WALL" : "5jN7f9jLE7Y",
+                               "WEEP" : "cxY9Ssv3ZT8" } },
+
+  "tjxmverY9uA" : { "name" : "1901",
+                    "link" : { "LOOK FOR LIGHT SWITCH" : "KvDr5agcDiI",
+                               "CZECH POCKETS" : "6vl6H-ORpV8" } },
+
+  "6vl6H-ORpV8" : { "name" : "69",
+                    "link" : { "FIND THE LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "WILL YOU EVER BE KIND TO ME?" : "IQsqZx6R5HA" } },
+
+  "UNQSBQ7akyw" : { "name" : "Tears of Success",
+                    "link" : { "START OVER" : "3FLQ1ffhMiU" } },
+
+  "3FLQ1ffhMiU" : { "name" : "0001",
+                    "link" : { "GO NORTH" : "X6PD4IUlCwo",
+                               "SLEEP" : "lsteokF2w8Q",
+                               "TURN ON LIGHT SWITCH" : "-WG36-XrcU4",
+                               "WHY?" : "PPifzjxTahY",
+                               "Easter Egg" : "rzUTxRo8Es4" } },
+
+  "rzUTxRo8Es4" : { "name" : "Error",
+                    "link" : { } },
+
+  "C-GPOhRRSgc" : { "name" : "Finger",
+                    "link" : { "MY FINGER CAN SEE" : "ZMAD6CAEV8I",
+                               "MY FINGER IS FLIPPING YOU OFF" : "v1FuDz2B8GU",
+                               "MY FINGER IS NORMAL" : "6TW-7E8PDEM" } },
+
+  "ZMAD6CAEV8I" : { "name" : "Can See",
+                    "link" : { "PLAY AGAIN" : "3FLQ1ffhMiU",
+                               "QUIT" : "yYxqfVS9KO8" } },
+
+  "yYxqfVS9KO8" : { "name" : "Quit",
+                    "link" : { "UNPLUG COMPUTER" : "igzPyd_L4oc" } },
+
+  "v1FuDz2B8GU" : { "name" : "Flip Off",
+                    "link" : { "WEEP" : "cxY9Ssv3ZT8",
+                               "I REFUSE TO CRY" : "qVdVt3ULONI" } },
+
+  "qVdVt3ULONI" : { "name" : "I Refuse",
+                    "link" : { "FIND LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "WEEP" : "cxY9Ssv3ZT8",
+                               "CHUCK POCKETS" : "RnI_7dfhL1A",
+                               "Easter Egg" : "3FLQ1ffhMiU" } },
+
+  "6TW-7E8PDEM" : { "name" : "1864",
+                    "link" : { "...YES?" : "IQsqZx6R5HA",
+                               "...NO?" : "JiOFKPlQmE0",
+                               "WEEP" : "cxY9Ssv3ZT8",
+                               "REFUSE TO CRY" : "qVdVt3ULONI" } },
+
+  "JiOFKPlQmE0" : { "name" : "88s",
+                    "link" : { "FIND THE LIGHT SWITCH" : "F09kP2A_Cbg" } },
+
+  "UudH7-3dF4g" : { "name" : "4077",
+                    "link" : { "APOLOGISE" : "6aB8851efZQ",
+                               "TOUCH YET ANOTHER WALL" : "dMiowNbu-pA",
+                               "Easter Egg" : "1Ht6DLN1NEM" } },
+
+  "6aB8851efZQ" : { "name" : "Apologise",
+                    "link" : { "TOUCH YET ANOTHER WALL" : "dMiowNbu-pA",
+                               "SMELL ROOM" : "739VmAPjLLA",
+                               "WEEP" : "cxY9Ssv3ZT8",
+                               "FIND LIGHT SWITCH" : "F09kP2A_Cbg" } },
+
+  "dMiowNbu-pA" : { "name" : "Touch Yet Another",
+                    "link" : { "WEEP" : "cxY9Ssv3ZT8",
+                               "SMELL ROOM" : "739VmAPjLLA" } },
+
+  "739VmAPjLLA" : { "name" : "Smell",
+                    "link" : { "THAT DOESN'T MAKE SENSE!" : "f66WRFif9Gw",
+                               "GO WEST" : "7nTRcRTUTlM",
+                               "KILL SELF" : "R8xou64tSNE" } },
+
+  "7nTRcRTUTlM" : { "name" : "3",
+                    "link" : { "GO EAST" : "f9bZiAX70z0" } },
+
+  "f9bZiAX70z0" : { "name" : "7337",
+                    "link" : { "GO SOUTHAMPTON" : "VBN1ecTX2qg" } },
+
+  "VBN1ecTX2qg" : { "name" : "8R3T HART",
+                    "link" : { "RUN INTO WALL" : "LfdcnvFxBX8",
+                               "GO TO SLEEP" : "lsteokF2w8Q",
+                               "Easter Egg" : "4lm_bcc6wK8" } },
+
+  "LfdcnvFxBX8" : { "name" : "The Wall",
+                    "link" : { "LEAN AGAINST THE WALL" : "TGRbeSK4tZE" } },
+
+  "TGRbeSK4tZE" : { "name" : "Pool of Blood",
+                    "link" : { "BLEED TO DEATH" : "kyOwDZOT39g",
+                               "BLEED JUST A LITTLE BIT" : "PaP0cmpFk38",
+                               "BLEED TO NEAR DEATH" : "hFcPlRXuxSk" } },
+
+  "kyOwDZOT39g" : { "name" : "90",
+                    "link" : { "START OVER" : "UISc1Y1JEDI" } },
+
+  "PaP0cmpFk38" : { "name" : "184826384962896",
+                    "link" : { "LEAN AGAINST THE WALL, BLEEDING" : "UwIQLrK3h_4" } },
+
+  "UwIQLrK3h_4" : { "name" : "Blood of Victory",
+                    "link" : { "START OVER" : "UISc1Y1JEDI" } },
+
+  "hFcPlRXuxSk" : { "name" : "868008608680",
+                    "link" : { "BLEED TO DEATH" : "jZ_VwF6B4VM" } },
+
+  "jZ_VwF6B4VM" : { "name" : "0000000000",
+                    "link" : { "START OVER" : "UISc1Y1JEDI" } },
+
+  "4lm_bcc6wK8" : { "name" : "Sadness and Badness",
+                    "link" : { } },
+
+  "4wletuFhuaY" : { "name" : "Pass Time",
+                    "link" : { "DIG!" : "99vLXb4v_hU",
+                               "SELL OUT" : "_d-NWYuzrtM",
+                               "FIND THE LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "LOCATE THE GOOD ENDING" : "ixijq65WbMU" } },
+
+  "99vLXb4v_hU" : { "name" : "Dig",
+                    "link" : { "TREASURE!" : "phnxJ0IUABU",
+                               "FREEDOM!!!" : "GZOAFBuYCpI" } },
+
+  "phnxJ0IUABU" : { "name" : "Treasure",
+                    "link" : { "GO BACK" : "UISc1Y1JEDI",
+                               "TURN AROUND" : "jkwiUvv0dnA",
+                               "WEEP" : "cxY9Ssv3ZT8" } },
+
+  "jkwiUvv0dnA" : { "name" : "Turn Around Redux",
+                    "link" : { "TURN BACK AROUND" : "TMHvA9bhDjA",
+                               "DIG!" : "99vLXb4v_hU",
+                               "LOOK FOR LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "VALENTINE" : "SPHvt6yu0BI" } },
+
+  "TMHvA9bhDjA" : { "name" : "Turn Back Around!",
+                    "link" : { "TURN AROUND" : "jkwiUvv0dnA",
+                               "PUNCH SELF" : "UISc1Y1JEDI" } },
+
+  "SPHvt6yu0BI" : { "name" : "Valentine's Day",
+                    "link" : { "LOVE POEM" : "D4If-ezMVTk",
+                               "LOVE LETTER" : "IQsqZx6R5HA" } },
+
+  "D4If-ezMVTk" : { "name" : "Poem",
+                    "link" : { "PASS TIME" : "4wletuFhuaY",
+                               "WEEP" : "cxY9Ssv3ZT8",
+                               "FIND LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "TURN AROUND" : "jkwiUvv0dnA" } },
+
+  "_d-NWYuzrtM" : { "name" : "Sell Out",
+                    "link" : { "... AND BACK TO THE GAME" : "UISc1Y1JEDI" } },
+
+  "ixijq65WbMU" : { "name" : "Find Good",
+                    "link" : { "TORTURE" : "6XfYtiIdJZY",
+                               "SEX!" : "9j6TJnJn2qk" } },
+
+  "6XfYtiIdJZY" : { "name" : "Torture 2",
+                    "link" : { "BEAT HEART" : "Xs9aBT6TNwQ",
+                               "PUNCH MAN" : "nO710ZpEA4w" } },
+
+  "9j6TJnJn2qk" : { "name" : "Sex",
+                    "link" : { "TORTURE" : "lC-966nMV0o",
+                               "WEEP" : "cxY9Ssv3ZT8",
+                               "LOOK FOR GOOD ENDING" : "ixijq65WbMU",
+                               "Easter Egg" : "rzUTxRo8Es4" } },
+
+  "lC-966nMV0o" : { "name" : "The Good Ending...?",
+                    "link" : { "3X1861" : "UISc1Y1JEDI",
+                               "JR007" : "UISc1Y1JEDI",
+                               "JR0733T" : "UISc1Y1JEDI",
+                               "AD1971" : "UISc1Y1JEDI" } },
+
+  "Xs9aBT6TNwQ" : { "name" : "Heartbeat 1",
+                    "link" : { "BEAT HEART" : "morZQ2ZzIQA" } },
+
+  "morZQ2ZzIQA" : { "name" : "Heartbeat 2",
+                    "link" : { "BEAT HEART" : "xDnARcMag8U" } },
+
+  "xDnARcMag8U" : { "name" : "What Becomes of the Broken Hearted",
+                    "link" : { "I'M NOT DEAD! PUNCH MAN IN THE FACE!" : "nO710ZpEA4w",
+                               "RESURRECT" : "UISc1Y1JEDI" } },
+
+  "nO710ZpEA4w" : { "name" : "Punch Man 1",
+                    "link" : { "PUNCH MAN!!" : "qwF3gsxm00A" } },
+
+  "qwF3gsxm00A" : { "name" : "Punch Man 2",
+                    "link" : { "PUNCH MAN!!!!" : "T9QHjU2W4Ao" } },
+
+  "T9QHjU2W4Ao" : { "name" : "Alright then",
+                    "link" : { "START OVER, KIDDO." : "UISc1Y1JEDI" } },
+
+  "1Ht6DLN1NEM" : { "name" : "Liquid Head",
+                    "link" : { } },
+
+  "GZOAFBuYCpI" : { "name" : "Freedom!",
+                    "link" : { "HAVE FACE" : "5MTXOTjymOU",
+                               "YOUR MUM HAS A FACE" : "IQsqZx6R5HA" } },
+
+  "5MTXOTjymOU" : { "name" : "Have a Face",
+                    "link" : { "TOUCH OWN FACE" : "RS9RQWkGURI" } },
+
+  "RS9RQWkGURI" : { "name" : "Gouge",
+                    "link" : { "START OVER" : "UISc1Y1JEDI" } },
+
+  "f66WRFif9Gw" : { "name" : "What Makes Sense",
+                    "link" : { "FIND LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "THINK OUTSIDE BOX" : "Yu7PpRnbsZw",
+                               "KILL SELF METAPHYSICALLY" : "RrUeD6F78Pc" } },
+
+  "Yu7PpRnbsZw" : { "name" : "Box",
+                    "link" : { "THINK OUTSIDE ROOM" : "DiTObrlSFuw",
+                               "RUN INTO WALL" : "LfdcnvFxBX8",
+                               "EXIT" : "p44cvgYfajA",
+                               "GO SOUTHAMPTON" : "VBN1ecTX2qg" } },
+
+  "DiTObrlSFuw" : { "name" : "Room",
+                    "link" : { "WANK FURIOUSLY" : "AiCNvkb8NnM",
+                               "CLICK HEELS TOGETHER 3X" : "T5k68vWyWGg",
+                               "FIND LIGHT SWITCH" : "F09kP2A_Cbg",
+                               "WEEP" : "cxY9Ssv3ZT8" } },
+
+  "AiCNvkb8NnM" : { "name" : "Furious",
+                    "link" : { "KILL SELF" : "R8xou64tSNE",
+                               "IS THIS NORMAL?" : "ySCV7QbQ1sk",
+                               "FIND LIGHT SWITCH" : "F09kP2A_Cbg" } },
+
+  "ySCV7QbQ1sk" : { "name" : "9999",
+                    "link" : { } },
+
+  "T5k68vWyWGg" : { "name" : "Not in Kansas anymore",
+                    "link" : { } },
+
+  "RrUeD6F78Pc" : { "name" : "Metaphysically",
+                    "link" : { "KILL SELF NORMALLY" : "R8xou64tSNE",
+                               "WEEP" : "cxY9Ssv3ZT8",
+                               "CALL FOR HELP" : "p-JUxIibQxw" } },
+
+  "p-JUxIibQxw" : { "name" : "Help",
+                    "link" : { "PLACIDLY MASTURBATE" : "2Pk6IYdCgZ0",
+                               "JUST LEAN AGAINST THE WALL AND WEEP" : "UNQSBQ7akyw",
+                               "KILL SELF" : "R8xou64tSNE" } },
+
+  "2Pk6IYdCgZ0" : { "name" : "Placid",
+                    "link" : { "LOOK FOR LIGHT SWITCH" : "KvDr5agcDiI",
+                               "ENTER THE PAST" : "3FLQ1ffhMiU",
+                               "DEVELOP PHOTOS" : "u8qoXAMwrys",
+                               "TEEBALL?" : "lnH0pbvrgIw" } },
+
+  "u8qoXAMwrys" : { "name" : "0",
+                    "link" : { "PRAY" : "7TP_n_pYL8g",
+                               "ESCAPE" : "-WG36-XrcU4",
+                               "EXIT" : "p44cvgYfajA",
+                               "GO EAST" : "f9bZiAX70z0" } },
+
+  "7TP_n_pYL8g" : { "name" : "Pi",
+                    "link" : { "SLEEP" : "lsteokF2w8Q",
+                               "CLICK HEELS TOGETHER 3X" : "T5k68vWyWGg",
+                               "WEEP" : "cxY9Ssv3ZT8" } },
+
+  "lnH0pbvrgIw" : { "name" : "Teeball",
+                    "link" : { "JETPACK INTO ROOF" : "UISc1Y1JEDI",
+                               "JUMP INTO THE CEILING" : "UISc1Y1JEDI" } }
+}

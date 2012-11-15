@@ -1,4 +1,4 @@
 projects
 ========
 
-Random projects I happen to have written code for.
+Whatever projects I happen to have written some code for.
