@@ -1,8 +1,8 @@
+%  NUTS-style escaping for colour tags.
 -module(colour).
 -export([interpolate/1]).
 
 % interpolate(String) -> EscapedString
-%  Does NUTS-style escaping for colour tags.
 %  Control:
 %   ~RS: Reset terminal
 %   ~RV: Reverse video
