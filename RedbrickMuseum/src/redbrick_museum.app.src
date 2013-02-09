@@ -1,0 +1,13 @@
+{application, redbrick_museum, [
+	{description, "Redbrick Museum server."},
+	{vsn, "1"},
+	{modules, []},
+	{registered, []},
+	{applications, [
+		kernel,
+		stdlib,
+		ranch
+	]},
+	{mod, {redbrick_museum_app, []}},
+	{env, []}
+]}.
