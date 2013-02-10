@@ -24,7 +24,7 @@
 %  the end of the string itself.
  
 interpolate("/~" ++ Tail) ->
-  [$/, $~ | interpolate(Tail)];
+  [$~ | interpolate(Tail)];
 
 interpolate([$~, Ground, Colour | Tail]) ->
   case [Ground, Colour] of
