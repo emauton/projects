@@ -55,3 +55,12 @@ interpolate([Other | Tail]) ->
 
 interpolate([]) ->
   "\e[0m".
+
+-include_lib("eunit/include/eunit.hrl").
+interpolate_test() ->
+  ?assertEqual("uncoloured\e[0m",       colour:interpolate("uncoloured")),
+  ?assertEqual("~FK escaped\e[0m",      colour:interpolate("/~FK escaped")),
+  ?assertEqual("\e[30m coloured\e[0m",  colour:interpolate("~FK coloured")),
+  ?assertEqual("\e[30m\e[40m two\e[0m", colour:interpolate("~FK~BK two")),
+  ?assertEqual("~passed through\e[0m",  colour:interpolate("~passed through")),
+  ?assertEqual("new\e[0m\nline\e[0m",   colour:interpolate("new\nline")).
