@@ -1,0 +1,50 @@
+Binary files riak_kv/.git/index and riak_kv.put_log//.git/index differ
+diff -u -r riak_kv/.git/logs/HEAD riak_kv.put_log//.git/logs/HEAD
+--- riak_kv/.git/logs/HEAD	2013-11-09 00:17:22.019610868 +0100
++++ riak_kv.put_log//.git/logs/HEAD	2013-11-09 00:16:32.459610868 +0100
+@@ -1,2 +1,2 @@
+-0000000000000000000000000000000000000000 91646c873649f4539c03b7d126f2f962fea34bf9 Cian Synnott <cian@emauton.org> 1383952641 +0100	clone: from git://github.com/basho/riak_kv.git
+-91646c873649f4539c03b7d126f2f962fea34bf9 91646c873649f4539c03b7d126f2f962fea34bf9 Cian Synnott <cian@emauton.org> 1383952642 +0100	checkout: moving from develop to origin/develop
++0000000000000000000000000000000000000000 91646c873649f4539c03b7d126f2f962fea34bf9 Cian Synnott <cian@emauton.org> 1383937917 +0100	clone: from git://github.com/basho/riak_kv.git
++91646c873649f4539c03b7d126f2f962fea34bf9 91646c873649f4539c03b7d126f2f962fea34bf9 Cian Synnott <cian@emauton.org> 1383937917 +0100	checkout: moving from develop to origin/develop
+diff -u -r riak_kv/.git/logs/refs/heads/develop riak_kv.put_log//.git/logs/refs/heads/develop
+--- riak_kv/.git/logs/refs/heads/develop	2013-11-09 00:17:21.987610868 +0100
++++ riak_kv.put_log//.git/logs/refs/heads/develop	2013-11-09 00:16:32.459610868 +0100
+@@ -1 +1 @@
+-0000000000000000000000000000000000000000 91646c873649f4539c03b7d126f2f962fea34bf9 Cian Synnott <cian@emauton.org> 1383952641 +0100	clone: from git://github.com/basho/riak_kv.git
++0000000000000000000000000000000000000000 91646c873649f4539c03b7d126f2f962fea34bf9 Cian Synnott <cian@emauton.org> 1383937917 +0100	clone: from git://github.com/basho/riak_kv.git
+Only in riak_kv.put_log//src: riak_kv_put_log.erl
+diff -u -r riak_kv/src/riak_kv_sup.erl riak_kv.put_log//src/riak_kv_sup.erl
+--- riak_kv/src/riak_kv_sup.erl	2013-11-09 00:17:22.011610868 +0100
++++ riak_kv.put_log//src/riak_kv_sup.erl	2013-11-09 00:16:32.151610715 +0100
+@@ -91,6 +91,9 @@
+     EnsemblesKV =  {riak_kv_ensembles,
+                     {riak_kv_ensembles, start_link, []},
+                     permanent, 30000, worker, [riak_kv_ensembles]},
++    PutLogger = {riak_kv_put_log,
++                 {riak_kv_put_log, start_link, []},
++                 permanent, 30000, worker, [riak_kv_put_log]},
+ 
+     % Figure out which processes we should run...
+     HasStorageBackend = (app_helper:get_env(riak_kv, storage_backend) /= undefined),
+@@ -110,7 +113,8 @@
+         JSSup,
+         MapJSPool,
+         ReduceJSPool,
+-        HookJSPool
++        HookJSPool,
++        PutLogger
+     ]),
+ 
+     % Run the proesses...
+diff -u -r riak_kv/src/riak_kv_vnode.erl riak_kv.put_log//src/riak_kv_vnode.erl
+--- riak_kv/src/riak_kv_vnode.erl	2013-11-09 00:17:22.015610868 +0100
++++ riak_kv.put_log//src/riak_kv_vnode.erl	2013-11-09 00:16:32.155610844 +0100
+@@ -1032,6 +1032,7 @@
+     {PrepPutRes, UpdPutArgs} = prepare_put(State, PutArgs),
+     {Reply, UpdState} = perform_put(PrepPutRes, State, UpdPutArgs),
+     riak_core_vnode:reply(Sender, Reply),
++    riak_kv_put_log:add(BKey),
+ 
+     update_index_write_stats(UpdPutArgs#putargs.is_index, UpdPutArgs#putargs.index_specs),
+     UpdState.
