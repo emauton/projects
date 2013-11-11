@@ -2,4 +2,7 @@ This is a quick & dirty proof of concept for logging the keys of updated
 objects in Riak for *each* vnode. Thus, each physical node in a cluster can
 have a log of each key it updates, with the same durability for these logs
 as for the data. The logs can be used e.g. to construct an index of updated
-keys without needing to list keys or use secondary indexing.
+keys without needing to list all keys or use secondary indexing.
+
+Example log (format MegaSecs,Secs,MicroSecs:::Bucket,Key) -
+1384,206927,81663:::__riak_client_test__,key1

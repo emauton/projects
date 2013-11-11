@@ -15,9 +15,9 @@
 start_link() ->
   gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-%% @doc Log a message.
-add(Message) ->
-  gen_server:cast(?MODULE, {add, Message}).
+%% @doc Log a {bucket, key} message.
+add(BKey) ->
+  gen_server:cast(?MODULE, {add, BKey}).
 
 %% gen_server
 %% State = {Fd, Count, Time} where
@@ -28,14 +28,17 @@ add(Message) ->
 init([]) ->
   {ok, {create(), 0, seconds()}}.
 
-handle_cast({add, Message}, State) ->
+handle_cast({add, {Bucket, Key}}, State) ->
   {Fd, Count, Time} = maybe_rotate(State),
-  file:write(Fd, io_lib:format("~p:::~4096p~n", [erlang:now(), Message])),
+  {Mega, Seconds, Micro} = os:timestamp(),
+  file:write(Fd, [integer_to_list(Mega), ",", integer_to_list(Seconds), ",",
+                  integer_to_list(Micro), ":::",
+                  binary_to_list(Bucket), ",", binary_to_list(Key), "\n"]),
   {noreply, {Fd, Count+1, Time}}.
 
 %% Internal.
 seconds() ->
-  {_Megaseconds, Seconds, _Milliseconds} = erlang:now(),
+  {_Megaseconds, Seconds, _Microseconds} = os:timestamp(),
   Seconds.
 
 maybe_rotate({Fd, Count, Time}) ->
@@ -53,7 +56,7 @@ rotate(Fd) ->
   create().
 
 create() ->
-  Filename = io_lib:format("./log/put_log.~b", [seconds()]),
+  Filename = ["./log/put_log.", integer_to_list(seconds())],
   {ok, Fd} = file:open(Filename, [append, raw, delayed_write]),
   Fd.
 

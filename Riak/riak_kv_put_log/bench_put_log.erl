@@ -2,7 +2,7 @@
 -export([run_bench/1]).
 
 %% Time N messages through riak_kv_put_log, at full speed.
-%% ~37k messages / second on my shitty VM.
+%% ~170k messages / second on my low-powered VM.
 run_bench(N) ->
   riak_kv_put_log:start_link(),
   T0 = erlang:now(),
@@ -13,5 +13,5 @@ run_bench(N) ->
 bench_loop(0) ->
   ok;
 bench_loop(N) ->
-  riak_kv_put_log:add({"This is log message", N}),
+  riak_kv_put_log:add({<<"Test bucket">>, <<"Test key">>}),
   bench_loop(N-1).
