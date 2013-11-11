@@ -31,9 +31,8 @@ init([]) ->
 handle_cast({add, {Bucket, Key}}, State) ->
   {Fd, Count, Time} = maybe_rotate(State),
   {Mega, Seconds, Micro} = os:timestamp(),
-  file:write(Fd, [integer_to_list(Mega), ",", integer_to_list(Seconds), ",",
-                  integer_to_list(Micro), ":::",
-                  binary_to_list(Bucket), ",", binary_to_list(Key), "\n"]),
+  file:write(Fd, [integer_to_list(Mega), $, , integer_to_list(Seconds), $, ,
+                  integer_to_list(Micro), ":::", Bucket, $, , Key, $\n]),
   {noreply, {Fd, Count+1, Time}}.
 
 %% Internal.
