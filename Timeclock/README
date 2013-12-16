@@ -1,0 +1,4 @@
+This used to be a rails application for keeping a record of personal
+clockin/clockout at work, back when I had trouble working reasonable hours.
+I've stripped it down to just the files I'll need to recreate it elsewhere
+in future.

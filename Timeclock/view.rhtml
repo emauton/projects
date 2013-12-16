@@ -1,0 +1,93 @@
+<% @title = "#{@user.name}'s timeclock card" %>
+
+<% if @flash[:notice] -%>
+  <div id="notice"> <%= @flash[:notice] %> </div>
+<% end -%>
+  <div id="card">
+    <table class="fields">
+      <tr>
+        <td class="field_name"> UID </td>
+        <td class="field_value"> <%= @user.name %> </td>
+      </tr>
+      <tr>
+        <td class="field_name"> Name </td>
+        <td class="field_value"> <%= @realname %> </td>
+      </tr>
+      <tr>
+        <td class="field_name"> Title </td>
+        <td class="field_value"> <%= @jobtitle %> </td>
+      </tr>
+      <tr>
+        <td class="field_name"> Hours this week </td>
+        <td class="field_value">
+          <%= sprintf("%2.2d:%2.2d", @hours_this_week,
+                                     @minutes_this_week) %>
+        </td>
+      </tr>
+    </table>
+    <p id="card_id">
+      <%= sprintf("%3.3d", @slot_pages.current.number) %> 
+    </p>
+    <table class="hours">
+      <tr>
+        <th>In</th> <th>Out</th> <th>Hrs</th> <th>Edit</th>
+      </tr>
+      <% rows = 0
+         for slot in @slots
+           rows = rows + 1  %>
+      <tr>
+          <td> <%= slot.start.strftime('%Y/%m/%d %H:%M') %> </td>
+          <td> <%= slot.finish.strftime('%Y/%m/%d %H:%M') %> </td>
+          <td> <% seconds = slot.finish - slot.start
+                  hours = (seconds / 1.hours).floor
+                  seconds = seconds - (hours * 1.hours)
+                  minutes = (seconds / 1.minutes).floor %>
+               <%= sprintf("%2.2d:%2.2d", hours, minutes) %> </td>
+          <td> <%= link_to(image_tag('pencil', :class => 'edit_button'),
+                           { :action => 'edit', :id => slot }) %></td>
+      </tr>
+      <% end %>
+      <% if @user.in_time and @slot_pages.current == @slot_pages.last
+         rows = rows + 1 %>
+      <tr>
+          <td> <%= @user.in_time.strftime('%Y/%m/%d %H:%M') %> </td>
+          <td> </td>
+          <td> </td>
+          <td> <%= image_tag('pencil_inact', :class => 'edit_button') %> </td>
+      </tr>
+      <% end %>
+      <% rows.upto(13) do %>
+      <tr>
+          <td> </td>
+          <td> </td>
+          <td> </td>
+          <td> <%= image_tag('pencil_inact', :class => 'edit_button') %> </td>
+      </tr>
+      <% end %>
+    </table>
+    <% if @slot_pages.current.previous %>
+      <p class="paginator left">
+      <%= link_to('Prev', { :page => @slot_pages.current.previous }) %>
+      </p>
+    <% end %>
+    <% if @user.in_time %>
+    <a class ="tooltip" href="/card/clockout">
+      <%= image_tag('card_button', :id => 'card_button') %>
+      <span>Clock Out</span>
+    </a>
+    <% else %>
+    <a class ="tooltip" href="/card/clockin">
+      <%= image_tag('card_button', :id => 'card_button') %>
+      <span>Clock In</span>
+    </a>
+    <% end %>
+    <% if @slot_pages.current.next %>
+      <p class="paginator right">
+      <%= link_to('Next', { :page => @slot_pages.current.next }) %>
+      </p>
+    <% end %>
+  </div> <!-- end "card" div -->
+  <%= image_tag('clock', :id => 'clock') %>
+  <div id="instructions">
+    Use the card-punch button on the card to clock in or out.
+  </div>
