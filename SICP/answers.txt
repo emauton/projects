@@ -1,0 +1,480 @@
+1.1
+Mostly obvious.
+The (define) ones are implementation-specific.
+
+1.2
+(/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5))))) (* 3 (- 6 2) (- 2 7)))
+
+> -37/150
+
+1.3
+There must be a cleverer way of doing this.
+
+(define (square x) (* x x))
+(define (sum-of-squares x y) (+ (square x) (square y)))
+(define (sum-of-largest-squares x y z)
+  (cond ((and (<= x y) (<= x z)) (sum-of-squares y z))
+        ((and (<= y x) (<= y z)) (sum-of-squares x z))
+        ((and (<= z x) (<= z y)) (sum-of-squares x y))
+  )
+)
+(sum-of-largest-squares 2 3 4)
+(sum-of-largest-squares 3 2 4)
+(sum-of-largest-squares 3 4 2)
+(sum-of-largest-squares 2 4 2)
+
+> 25
+> 25
+> 25
+> 20
+
+1.4
+If b > 0, the combination (if (> b 0) + -) evaluates to '+', otherwise '-';
+this becomes the operation performed on a and b.
+
+1.5
+In an applicative-order interpreter, you enter an infinite loop (or get a stack
+overflow, depending on the implementation I *think*; question re:
+tail-recursion?).  In a normal-order interpreter, (p) is never evaluated so the
+combination evaluates to 0.
+
+1.6
+The problem with new-if is that it is not a special form, so the interpreter
+evaluates its arguments in applicative order. This works fine in Eva's simple
+test cases, but not when we use sqrt-iter; here, sqrt-iter calls itself
+recursively every time it is called, not just when (good-enough? guess x) is
+false. So, we get an infinite loop.
+
+1.7
+For very small numbers, 0.001 as a 'close enough' test will allow a
+comparitively large error. For example, take 0.005 (sqrt is the builtin;
+newton-sqrt is ours):
+> (newton-sqrt 0.005)
+0.0722471690979458
+> (sqrt 0.005)
+0.07071067811865475
+Not so good.
+
+Now, let x be some large number. Our first approximation will be ~= x/2.
+Squaring it as part of our test, we'll get x^2/4 - a much larger number, which
+may of course overflow our limited precision or at least force the interpreter
+to do some fancy (and inefficient) big-number handling tricks. An example is
+(newton-sqrt 10e20), which hangs for at least 10s, compared to (sqrt 10e20)
+which completes nearly instantly.
+
+New implementation:
+(define (better-newton-sqrt x) (better-sqrt-iter 1.0 0.5 x))
+
+(define (better-sqrt-iter newguess oldguess x)
+  (if (better-good-enough? newguess oldguess)
+     newguess
+     (better-sqrt-iter (improve newguess x) newguess x)))
+
+(define (better-good-enough? newguess oldguess)
+  (< (/ (abs (- newguess oldguess)) newguess) 0.0000001)) 
+
+(define (improve guess x)
+  (average guess (/ x guess)))
+
+(define (average x y)
+  (/ (+ x  y) 2))
+
+> (better-newton-sqrt 0.005)
+0.07071067811865478
+> (better-newton-sqrt 10e20)
+31622776601.683846
+
+Much better!
+
+1.8
+(define (cube-root x) (cube-root-iter 1.0 0.5 x))
+
+(define (cube-root-iter newguess oldguess x)
+  (if (cube-good-enough? newguess oldguess)
+     newguess
+     (cube-root-iter (cube-improve newguess x) newguess x)
+  )
+)
+
+(define (cube-good-enough? newguess oldguess)
+  (< (/ (abs (- newguess oldguess)) newguess) 0.0000001)
+)
+
+(define (cube-improve guess x)
+  (/ (+ (/ x (* guess guess)) (* 2 guess)) 3)
+)
+
+(cube-root 27)
+(cube-root 100)
+(define root (cube-root 100))
+(* root root root)
+
+> 3.0
+> 4.641588833612779
+> 100.00000000000003
+
+1.9
+First case - 
+(+ 4 5)
+(inc (+ (dec 4) 5)) -> (inc (+ 3 5))
+(inc (inc (+ (dec 3) 5))) -> (inc (inc (+ 2 5)))
+(inc (inc (inc (inc (dec 1) 5)))) -> (inc (inc (inc (inc (+ 0 5)))))
+(inc (inc (inc (inc 5))))
+(inc (inc (inc 6)))
+(inc (inc 7))
+(inc 8)
+9
+
+This is a linear recursive process.
+
+Second case -
+(+ 4 5)
+(+ (dec 4) (inc 5)) -> (+ 3 6)
+(+ (dec 3) (inc 6)) -> (+ 2 7)
+(+ (dec 2) (inc 7)) -> (+ 1 8)
+(+ (dec 1) (inc 8)) -> (+ 0 9)
+9
+
+This is a linear iterative process.
+
+1.10
+Ackermann's function A(x,y) -> 0 if y=0, 2 if y=1, 2y if x=0, and otherwise
+A(x-1, A(x, (y-1))). Pretty horrible.
+
+(A 1 10)
+(A 0 (A 1 9))
+(A 0 (A 0 (A 1 8)))
+(A 0 (A 0 (A 0 (A 1 7))))
+(A 0 (A 0 (A 0 (A 0 (A 1 6)))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 1 5))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 4)))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 3))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 2)))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 1 1))))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 2)))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 4))))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 8)))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 (A 0 16))))))
+(A 0 (A 0 (A 0 (A 0 (A 0 32)))))
+(A 0 (A 0 (A 0 (A 0 64))))
+(A 0 (A 0 (A 0 128)))
+(A 0 (A 0 256))
+(A 0 512)
+1024
+
+The horror. So (A 1 x) = 2**x
+
+(A 2 4)
+(A 1 (A 2 3))
+(A 1 (A 1 (A 2 2)))
+(A 1 (A 1 (A 1 (A 2 1))))
+(A 1 (A 1 (A 1 2)))
+(A 1 (A 1 4))
+(A 1 16)
+65536
+
+So what is (A 2 x)? 2**(2**x)? No, counterexample 3.
+(A 2 4) = 65536
+(A 2 3) = 16
+(A 2 2) = 4
+(A 2 1) = 2
+This is actually (A 2 n) = 2**(2**(2** ... (2**2)))
+i.e. (A 2 4) = 2**(2**(2**2))
+     (A 2 3) = 2**(2**2)
+     (A 2 2) = 2**2
+     (A 2 1) = 2
+i.e. right-associated "superpower" :o)
+
+Remember that each of those (A 1 x) are expanding per the first example above.
+
+(A 3 3)
+(A 2 (A 3 2))
+(A 2 (A 2 (A 3 1)))
+(A 2 (A 2 2))
+(A 2 4)
+65536
+
+Pretty cool. Not sure what function this is, but I'm not being asked. :o)
+
+(f n) = 2n
+(g n) = pow(2, n)
+(h n) = pow(2, pow(2, ... (enough to make up n 2s) ... , pow(2, 2))
+
+1.10.5
+Challenge: create a better algorithm (linear iterative?) for computing the
+result of count-change.
+
+Linear iterative should be possible, if we enumerate the state variables we
+will need. What is the compiler keeping for us in the tree-recursive
+count-change?
+
+(define (count-change amount) (cc amount 5))
+
+(define (cc amount kinds-of-coins)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (= kinds-of-coins 0)) 0)
+        (else (+ (cc amount
+                     (- kinds-of-coins 1))
+                 (cc (- amount
+                        (first-denomination kinds-of-coins))
+                     kinds-of-coins)))))
+
+(define (first-denomination kinds-of-coins)
+  (cond ((= kinds-of-coins 1)  1) 
+        ((= kinds-of-coins 2)  5) 
+        ((= kinds-of-coins 3) 10) 
+        ((= kinds-of-coins 4) 25) 
+        ((= kinds-of-coins 5) 50))) 
+
+First, a worked (small) example by substitution:
+
+(cc 5 2)
+(+ (cc 5 1) (cc (- 5 5) 2))
+(+ (+ (cc 5 0) (cc (- 5 1) 1)) 1)
+(+ (+ 0 (cc 4 1)) 1)
+
+The only approach I think I could make work is to calculate the number of ways to make each kind
+of coin out of smaller coins, and then add them up for all the coin types that will fit into the
+amount we're changing. But this is just a distraction I've spent too much time on, damnit.
+
+1.11
+Recursive is easy.
+
+(define (recursive-f n)
+  (cond ((< n 3) n)
+        (else (+ (recursive-f (- n 1))
+                 (* 2 (recursive-f (- n 2)))
+                 (* 3 (recursive-f (- n 3)))))))
+
+
+Following the iterative-fibonacci trick, we can do this:
+Use 3 integers, n1, n2, n3 initialised to f(2) = 2, f(1) = 1, f(0) = 0.
+Then apply the rules
+n1 <- n1 + 2*n2 + 3*n3
+n2 <- n1
+n3 <- n2
+
+As we go, decrement n; when n = 2, our answer is n1.
+
+(define (iterative-f n)
+  (define (iterate n n1 n2 n3)
+    (cond ((= n 2) n1)
+         (else (iterate (- n 1) (+ n1 (* 2 n2) (* 3 n3)) n1 n2))))
+  (cond ((< n 3) n)
+        (else (iterate n 2 1 0))))
+
+This is much more efficient than the recursive version.
+
+1.12
+I did this by allowing 'zeroes' outside the triangle itself; e.g. (pascal 1 2) is 0.
+
+(define (pascal row col)
+  (cond ((or (< row 1) (< col 1) (> col row)) 0)
+        ((= row 1) 1)
+        (else (+ (pascal (- row 1) (- col 1))
+                 (pascal (- row 1) col)))))
+
+1.13
+No idea; didn't get very far (see grey notebook). Probably missing some simple algebra :o\
+
+1.14
+See grey notebook for the tree.
+
+time = theta(n), it looks to me. kinds-of-coins affects the number of levels in the tree, but for
+large n it will be governed by n.
+space = ... not sure. We should discuss this.
+I think maybe n^2, because for large n, taking away the biggest currency leaves ~n, and each such ends up with at least an n-long string of additions of the smallest currency.
+
+1.15
+a. (sine 12.5)
+-> (- ( * 3 (sine (/ 12.5 3))) (* 4 (cube (sine (/ 12.5 3)))))
+= (- (* 3 (sine 4.1666)) (* 4 (cube (sine 4.1666))))
+
+(sine 4.1666...)
+-> (p (sine 1.38888...))
+
+(sine 1.388888....)
+-> (p (sine 0.4629629...))
+
+(sine 0.4629629...)
+-> (p (sine 0.1543209...))
+
+(sine blah)
+-> (p (sine 0.05144039...))
+
+Last step. So p is applied 5 times, i.e. (/ 12.5 (pow 3 5)) < 0.1
+
+We can generalise that inequality to (/ a (pow 3 n)) < 0.1 for some n; n will be the number of
+times the procedure p is called for value a. Rewrite as a < 0.1 * 3^n
+
+In other words, each time we multiply a by 3, n grows by 1. So this procedure generates a process
+that is *logarithmic* in both size and space used for input a.
+
+space = time = theta (log3 a)
+
+See note 37 on page 46. Why do the arbitrary constants k1, k2 imply that for a logarithmic process,
+the base to which logarithms are taken does not matter?
+
+I have long needed to understand logarithms better. TODO: play with them, maybe with matplotlib?
+
+See Knuth 1981 s4.6.3? I guess this is probably one of the volumes of the Art.
+
+1.16
+Invariant win! It's important to recognise the two distinct cases, odd and even, and how they
+ping-pong. It was useful to try small cases.
+
+(define (fast-iter-expt b n)
+  (define (iter base exponent state)
+    (cond ((= exponent 0) state)
+          ((even? exponent) (iter (square base) (/ exponent 2) state))
+          (else (iter base (- exponent 1) (* base state)))))
+  (iter b n 1))
+
+1.17
+We have add, double and halve. The key thing is that
+  ab = (a/2)(2b) for even a, and
+  ab = a + (a - 1)b for odd a
+
+(define (double a) (* a 2))
+(define (halve a)  (/ a 2))
+(define (even? a) (= (remainder a 2) 0))
+
+(define (fast* a b)
+  (cond ((or (= a 0) (= b 0)) 0)
+        ((even? a) (fast* (halve a) (double b)))
+        (else (+ b (fast* (- a 1) b))))) 
+
+I had a bit of a 'duh' moment with the odd case, where I was adding a to (fast* (- a 1) b) ...
+
+1.18
+Again, treat even and odd as very distinct cases, try small cases. Try to find an invariant. I think
+the invariant here was 'ab + state'. The fact that halving always ends on a 1 makes all the
+difference - you can therefore always guarantee that state gets set correctly before the base case -
+there's probably some deep idea here that I don't understand.
+
+(define (fast-iter-* a b)
+  (define (iter a b state)
+    (cond ((or (= a 0) (= b 0)) state)
+          ((even? a) (iter (halve a) (double b) state))
+          (else (iter (- a 1) b (+ b state)))))
+  (iter a b 0))
+
+1.19
+T_pq transforms (a, b) to (bq + aq + ap, bp + aq)
+Applied twice, find the same form.
+T_pq transforms (bq + aq + ap, bp + aq) to
+  ((bp + aq)q + (bq + aq + ap)q + (bq + aq + ap)p, (bp + aq)p + (bq + aq + ap)q)
+Need to reduce this to the T_pq form and thus solve for p',q'
+  (bpq + aqq + bqq + aqq + apq + bpq + apq + app, bpp + apq + bqq + aqq + apq)
+Gather terms
+  (bqq + bpq + bpq + aqq + aqq + apq + apq + app, bpp + bqq + apq + aqq + apq)
+  (b(qq + 2pq) + a(qq + 2pq) + a(pp + qq), b(pp + qq) + a(qq + 2pq))
+So,
+  p' = pp + qq
+  q' = qq + 2pq
+
+1.20
+In normal-order evaluation, we never get b = 0, so we have an infinite recursion and number of
+(remainder) operations, but ZERO are performed. In applicative-order we have 4 remainder operations.
+
+normal-order:
+(gcd 206 40) -> (gcd 40 (rem 206 40)) -> (gcd (rem 206 40) (rem 40 (rem 206 40)) -> ...
+applicative-order:
+(gcd 206 40) -> (gcd 40 (rem 206 40)) -> (gcd 40 6) -> (gcd 6 (rem 40 6)) -> (gcd 6 4) ->
+(gcd 4 (rem 6 4)) -> (gcd 4 2) -> gcd (2 (rem 4 2)) -> (gcd 2 0) -> 2
+
+1.21
+These numbers are all prime, i.e. each is its own smallest divisor.
+
+1.22
+> (search-for-primes 1000 1020)
+1009 *** 0.031005859375
+1013 *** 0.031982421875
+1019 *** 0.031005859375
+> (search-for-primes 10000 10038)
+10007 *** 0.12109375
+10009 *** 0.117919921875
+10037 *** 0.1201171875
+> (search-for-primes 100000 100045)
+100003 *** 0.325927734375
+100019 *** 0.328125
+100043 *** 0.301025390625
+> (search-for-primes 1000000 1000038)
+1000003 *** 0.783935546875
+1000033 *** 0.822021484375
+1000037 *** 0.85498046875
+
+sqrt(10) ~= 3.16
+
+So each time you should mulitply time by a little over 3. The pattern follows this reasonably
+well if not exactly. If anything, after 10000 it becomes slightly shorter to calculate - presumably
+this is interpreter overhead being cancelled by longer algorithm runtimes.
+
+1.23
+> (search-for-primes 1000 1020)
+1009 *** 0.033935546875
+1013 *** 0.033935546875
+1019 *** 0.034912109375
+> (search-for-primes 10000 10038)
+10007 *** 0.0791015625
+10009 *** 0.0810546875
+10037 *** 0.072021484375
+> (search-for-primes 100000 100045)
+100003 *** 0.23095703125
+100019 *** 0.1650390625
+100043 *** 0.18115234375
+> (search-for-primes 1000000 1000038)
+1000003 *** 0.5068359375
+1000033 *** 0.511962890625
+1000037 *** 0.666015625
+
+(rough averages)
+For ~1000, ratio is 0.031/0.034 =  0.911764705882353
+    10000,          0.12/0.08   =  1.5
+   100000,          0.32/0.18   =  1.77777777777778
+  1000000,          0.81/0.55   =  1.47272727272727
+
+So we don't get a 2x speedup. Not sure about an explanation. We have a real function call plus a
+branch plus an addition instead of just an addition, so that should make a difference. In other
+words, we're halving the number of tests, but each test has an additional cost.
+
+1.24
+You need to double a number near 1000 ten times to get something near 1000000, so I would expect
+10 more steps. 1000 would take 10 steps to decompose by halves, so I expect numbers around 1000000
+to take twice as long.
+
+> (search-for-primes 1000 1020)
+1009 *** 0.030029296875
+1013 *** 0.031005859375
+1019 *** 0.030029296875
+> (search-for-primes 1000000 1000038)
+1000003 *** 0.137939453125
+1000033 *** 0.1328125
+1000037 *** 0.14501953125
+
+This doesn't work at all. Maybe I'm way off in my calculations? It's much faster than the other
+method, but it's taking more like 4-5 times as long. It doesn't make sense that this is because
+we're working with larger numbers; compare with the others' results.
+
+1.25
+Alyssa is wrong. It's important that in expmod we use the facts from note 46 on p.52; in particular,
+by just taking the exponent and then doing the modulus, we discard the guarantee we have in using
+the fact that (x * y) mod m = (x mod m * y mod m) mod m. This is completely different to
+(x * y) mod m.
+
+1.26
+Because the interpreter is applicative-order, calling (square (some-function n)) is entirely
+different to calling (* (some-function n) (some-function n)). In the first case, some-function is
+evaluated once before being squared; in the second, we evaluate it twice. So this is what Eva means:
+although Louis is halving the number of steps each expmod needs to perform, each expmod is evaluated
+twice. Also, note that Louis should be pronounced with the 's'. :op
+
+1.27
+(define (exhaustive-fermat-test n)
+  (define (iter count)
+    (cond ((= count n) #t)
+          ((= (expmod count n n) count) (iter (+ count 1)))
+          (else #f)))
+  (iter 2))
+
+This returns #t for all of the Carmichael numbers listed in note 47.
