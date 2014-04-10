@@ -1,0 +1,16 @@
+#!/bin/bash
+# Process original Redbrick House user data into Erlang terms.
+# The original Redbrick House user data are stored in 'username.D'
+# files with a simple structure; see userfile_to_term.c
+
+directory=${1:-redbrickhouse/userfiles}
+output=${2:-users}
+
+if [[ ! -d ${output} ]] ; then
+  mkdir -p ${output}
+fi
+
+for file in $(cd ${directory} ; ls *.D) ; do
+  name=${file%%.D}
+  ./userfile_to_term ${directory} ${name} > ${output}/${name}.term
+done
