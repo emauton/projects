@@ -1,0 +1,16 @@
+---
+categories: reading
+date: {% now "Y/m/d" %} 00:00:00
+title: Reading rollup, {% now "Y-m-d" %}.
+---
+
+<ul>
+{% for pin in pins %}
+  <li>
+    <p><a href="{{pin.href}}" title="{{pin.description}}">{{pin.description}}</a></p>
+    <p>{{pin.extended}}</p>
+  </li>
+{% endfor %}
+</ul>
+
+<small>Generated from [pinboard](https://pinboard.in/) by [pinroll](https://github.com/emauton/projects/tree/master/Toys/pinroll).</small>

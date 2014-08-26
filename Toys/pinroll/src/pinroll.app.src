@@ -1,0 +1,15 @@
+{application, pinroll,
+ [
+  {description, "pinroll: roll up a set of pinboard pins for a blog post."},
+  {vsn, "1"},
+  {modules, [
+             pinboard,
+             pinroll
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {env, []}
+ ]}.
