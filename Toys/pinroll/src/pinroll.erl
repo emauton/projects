@@ -25,17 +25,18 @@ get_pins(ApiInfo, N) ->
   pinboard:init(),
   All = pinboard:get(ApiInfo, "pinroll"),
   Pins = lists:sublist(lists:reverse(All), N),  % i.e. the last N pins.
-  Untagged = [strip_pinroll_tag(P) || P <- Pins],
+  Untagged = [update_pinroll_tags(P) || P <- Pins],
   ok = pinboard:update(ApiInfo, Untagged),
   Untagged.
 
-% Strip the "pinroll" tag from a pin.
--spec strip_pinroll_tag(pinboard:pin()) -> pinboard:pin().
-strip_pinroll_tag(Pin) ->
+% Strip the "pinroll" tag from a pin, replace with "pinrolled".
+-spec update_pinroll_tags(pinboard:pin()) -> pinboard:pin().
+update_pinroll_tags(Pin) ->
   Bin = proplists:get_value(<<"tags">>, Pin),
   Tags = string:tokens(binary_to_list(Bin), " "),
-  NewTags = string:join([T || T <- Tags, T =/= "pinroll"], " "),
-  [{<<"tags">>, list_to_binary(NewTags)} | proplists:delete(<<"tags">>, Pin)].
+  NewTags = ["pinrolled" | lists:delete("pinroll", Tags)],
+  NewBin = list_to_binary(string:join(NewTags, " ")),
+  [{<<"tags">>, NewBin} | proplists:delete(<<"tags">>, Pin)].
 
 options() ->
   [
@@ -92,15 +93,15 @@ read_token(TokenFile) ->
 % Get N fixtures - with and without the "pinroll" tag.
 get_pins_fixtures(N) -> 
   % get_pins manipulates only the "tags" value of the proplist (via
-  % strip_pinroll_tags), so for fixtures we can get by with these minimal
+  % update_pinroll_tags), so for fixtures we can get by with these minimal
   % proplists.
   Pins     = [
                [{<<"tags">>, <<"tag1 tag2 pinroll">>}],
                [{<<"tags">>, <<"tag3 tag4 pinroll">>}]
              ],
   Untagged = [
-               [{<<"tags">>, <<"tag1 tag2">>}],
-               [{<<"tags">>, <<"tag3 tag4">>}]
+               [{<<"tags">>, <<"pinrolled tag1 tag2">>}],
+               [{<<"tags">>, <<"pinrolled tag3 tag4">>}]
              ],
   {lists:sublist(Pins, N), lists:sublist(Untagged, N)}.
 
