@@ -1,4 +1,4 @@
-projects
+Projects
 ========
 
-Whatever projects I happen to have written some code for.
+This repository conists of several useful codes that I have writte. Do check them out.
