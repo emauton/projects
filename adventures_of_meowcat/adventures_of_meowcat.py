@@ -27,11 +27,13 @@ class Mob:
     desc: str
     damage: int
     health: int
+    aggro: bool
     tags: List[str]
 
 
 @dataclass
 class Room:
+    tag: str
     desc: str
     exits: List[Exit]
     items: List[Item]
@@ -42,6 +44,13 @@ class Room:
 
     def remove_mob(self, mob):
         self.mobs = [m for m in self.mobs if m != mob]
+
+    def aggro(self, game):
+        for m in self.mobs:
+            if m.aggro:
+                print(f"{m.desc} is aggravated! It attacks you!")
+                game.player.health -= m.damage
+                print(f"Your health: {game.player.health}")
 
     def print(self):
         print()
@@ -79,18 +88,32 @@ class Game:
     room: Room
     player: Player
 
+    def go_to_tag(self, tag):
+        for r in self.all_rooms:
+            if r.tag == tag:
+                self.room = r
 
 
 def initialize_game():
-    dummy_room = Room('Room under construction', [], [], [])
-    room1 = Room('You are in a dark room.',
-             [Exit('There is a large pit to the right', dummy_room, ['pit', 'right'])],
+    dummy_room = Room('dummy', 'Room under construction', [], [], [])
+    room1 = Room('start', 'You are in a dark room.',
+             [],
              [Item('A burning torch', 2, 0, ['torch'])],
-             [Mob(colored('A flying turtle!', 'green'), 2, 4, ['turtle'])])
+             [Mob(colored('A flying turtle!', 'green'), 2, 4, False, ['turtle'])])
+    room2 = Room('mirror', 'You are in a large empty room with a golden mirror.',
+             [],
+             [Item('A mirror', 0, 0, ['mirror'])],
+             [])
+    room3 = Room('statue', 'You are in a large hallway.',
+            [],
+            [],
+            [Mob(colored('A terrifying gargoyle!', 'cyan'), 2, 4, True, ['gargoyle', 'statue'])])
+    room1.exits = [Exit('There is a large pit to the right', room2, ['pit', 'right'])]
+    room2.exits = [Exit('Climb out of the pit', room1, ['climb', 'up'])]
 
     player = Player('You are Meowcat! So stronk.', None, 20)
 
-    return Game([dummy_room, room1], room1, player)
+    return Game([dummy_room, room1, room2, room3], room1, player)
 
 
 def print_welcome_message():
@@ -169,9 +192,10 @@ def command_hit(game, obj):
         if not game.player.weapon:
             print(f"You've got nothing to hit {obj} with!")
             return
-        print(f"You've just made an enemy! It hits you back!")
+        if not mob.aggro:
+            print(f"You've just made an enemy! It hits you back!")
+            mob.aggro = True
         mob.health -= game.player.weapon.damage
-        game.player.health -= mob.damage
 
         if mob.health <= 0:
             print(colored(f"You have eliminated {obj}!", 'red'))
@@ -181,6 +205,17 @@ def command_hit(game, obj):
             print(f"Your health: {game.player.health}; {obj}'s health: {mob.health}")
 
     search_and_exec(game, obj, game.room.mobs, hit_fn)
+
+
+def command_use(game, obj):
+    def use_fn(game, item):
+        if item.desc == 'A mirror':
+            print("You see a", colored("purple mist", 'magenta'), "enclose the room!")
+            print("You are teleported!")
+            game.go_to_tag('statue')
+            return
+        print(f"You can't use {obj}.")
+    search_and_exec(game, obj, game.room.items, use_fn)
 
 
 def command_quit(game, obj):
@@ -194,6 +229,7 @@ def process_command(game, verb, obj):
             'take': command_take,
             'catch': command_catch,
             'hit': command_hit,
+            'use': command_use,
             'quit': command_quit
             }
 
@@ -211,7 +247,13 @@ def main():
     print_welcome_message()
 
     while True:
+        if game.player.health <= 0:
+            print(colored("You are knocked out!", "red"))
+            print("You awake blearily ...")
+            game = initialize_game()
+
         game.room.print()
+        game.room.aggro(game)
         command = get_input()
 
         try:
