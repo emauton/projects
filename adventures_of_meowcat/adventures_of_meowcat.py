@@ -29,6 +29,7 @@ class Mob:
     health: int
     aggro: bool
     tags: List[str]
+    drop: Item
 
 
 @dataclass
@@ -41,6 +42,9 @@ class Room:
 
     def remove_item(self, item):
         self.items = [i for i in self.items if i != item]
+
+    def add_item(self, item):
+        self.items.append(item)
 
     def remove_mob(self, mob):
         self.mobs = [m for m in self.mobs if m != mob]
@@ -99,7 +103,7 @@ def initialize_game():
     room1 = Room('start', 'You are in a dark room.',
              [],
              [Item('A burning torch', 2, 0, ['torch'])],
-             [Mob(colored('A flying turtle!', 'green'), 2, 4, False, ['turtle'])])
+             [Mob(colored('A flying turtle!', 'green'), 2, 4, False, ['turtle'], None)])
     room2 = Room('mirror', 'You are in a large empty room with a golden mirror.',
              [],
              [Item('A mirror', 0, 0, ['mirror'])],
@@ -107,13 +111,21 @@ def initialize_game():
     room3 = Room('statue', 'You are in a large hallway.',
             [],
             [],
-            [Mob(colored('A terrifying gargoyle!', 'cyan'), 2, 4, True, ['gargoyle', 'statue'])])
+            [Mob(colored('A terrifying gargoyle!', 'cyan'), 2, 4, True,
+                ['gargoyle', 'statue'],
+                Item('Cat fud', 0, 5, ['food']))])
+    room4 = Room('ghost', ('You are in a brightly-lit room, with light pouring in from a hole in the ceiling. '
+                           'It is covered in moss.'),
+            [],
+            [Item('A rusty sword', 3, 0, ['sword'])],
+            [Mob(colored('A ghoulish ghost!', 'cyan'), 3, 3, True, ['ghost', 'ghoul'], None)])
     room1.exits = [Exit('There is a large pit to the right', room2, ['pit', 'right'])]
     room2.exits = [Exit('Climb out of the pit', room1, ['climb', 'up'])]
+    room3.exits = [Exit('There is a door to the left', room4, ['left'])]
 
     player = Player('You are Meowcat! So stronk.', None, 20)
 
-    return Game([dummy_room, room1, room2, room3], room1, player)
+    return Game([dummy_room, room1, room2, room3, room4], room1, player)
 
 
 def print_welcome_message():
@@ -201,6 +213,9 @@ def command_hit(game, obj):
             print(colored(f"You have eliminated {obj}!", 'red'))
             print(f"Your health: {game.player.health}.")
             game.room.remove_mob(mob)
+            if mob.drop:
+                print(f"{obj} drops {mob.drop.desc}!")
+                game.room.add_item(mob.drop)
         else:
             print(f"Your health: {game.player.health}; {obj}'s health: {mob.health}")
 
