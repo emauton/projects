@@ -21,6 +21,7 @@ class Item:
     damage: int
     heal: int
     tags: List[str]
+    takeable: bool
 
 @dataclass
 class Mob:
@@ -81,9 +82,16 @@ class Player:
     desc: str
     weapon: Item
     health: int
+    inventory: List[Item]
 
-    def use_item(self, item):
+    def wield_item(self, item):
         self.weapon = item
+
+    def add_inventory(self, item):
+        self.inventory.append(item)
+
+    def remove_inventory(self, item):
+        self.inventory = [i for i in self.inventory if i != item]
 
 
 @dataclass
@@ -102,28 +110,35 @@ def initialize_game():
     dummy_room = Room('dummy', 'Room under construction', [], [], [])
     room1 = Room('start', 'You are in a dark room.',
              [],
-             [Item('A burning torch', 2, 0, ['torch'])],
+             [Item('A burning torch', 2, 0, ['torch'], True)],
              [Mob(colored('A flying turtle!', 'green'), 2, 4, False, ['turtle'], None)])
     room2 = Room('mirror', 'You are in a large empty room with a golden mirror.',
              [],
-             [Item('A mirror', 0, 0, ['mirror'])],
+             [Item('A mirror', 0, 0, ['mirror'], False)],
              [])
     room3 = Room('statue', 'You are in a large hallway.',
             [],
             [],
             [Mob(colored('A terrifying gargoyle!', 'cyan'), 2, 4, True,
                 ['gargoyle', 'statue'],
-                Item('Cat fud', 0, 5, ['food']))])
+                Item('Cat fud', 0, 5, ['food'], True))])
     room4 = Room('ghost', ('You are in a brightly-lit room, with light pouring in from a hole in the ceiling. '
                            'It is covered in moss.'),
             [],
-            [Item('A rusty sword', 3, 0, ['sword'])],
+            [Item('A rusty sword', 3, 0, ['sword'], True)],
             [Mob(colored('A ghoulish ghost!', 'cyan'), 3, 3, True, ['ghost', 'ghoul'], None)])
+    room5 = Room('executioner', ('This is a massive room. In the centre there is a chopping block. '
+                                 'It is covered in grisly blood!'),
+            [],
+            [],
+            [Mob(colored('A giant axe-wielding rat named THE EXECUTIONER!', 'red'), 4, 10, True, ['executioner', 'rat'],
+                 [Item('A bloody axe', 4, 0, ['axe'], True)])])
     room1.exits = [Exit('There is a large pit to the right', room2, ['pit', 'right'])]
     room2.exits = [Exit('Climb out of the pit', room1, ['climb', 'up'])]
     room3.exits = [Exit('There is a door to the left', room4, ['left'])]
+    room4.exits = [Exit('There is a large, scary gateway!', room5, ['gateway'])]
 
-    player = Player('You are Meowcat! So stronk.', None, 20)
+    player = Player('You are Meowcat! So stronk.', None, 20, [])
 
     return Game([dummy_room, room1, room2, room3, room4], room1, player)
 
@@ -144,7 +159,9 @@ def print_prompt():
 
 def get_input():
     print_prompt()
-    return input()
+    line = input()
+    line.strip()
+    return line
 
 
 class ParseError(Exception):
@@ -172,32 +189,54 @@ def search_and_exec(game, obj, things, fn):
             fn(game, thing)
             found = True
             break
-    if not found:
-        print(f"You don't see {obj} here.")
+    return found
 
 
 def command_go(game, obj):
     def go_fn(game, exit):
         print(f'You go towards the {obj}.')
+
+        if 'gateway' in exit.tags:
+            print(colored('As you pass through the gateway, you feel stronger! You are healed!', 'green'))
+            game.player.health = 20
         game.room = exit.room
 
-    search_and_exec(game, obj, game.room.exits, go_fn)
+    if not search_and_exec(game, obj, game.room.exits, go_fn):
+        print(f"You don't see {obj} here.")
+
 
 
 def command_take(game, obj):
     def take_fn(game, item):
-        print(f'You take and wield the {obj}.')
-        game.player.use_item(item)
+        if not item.takeable:
+            print(f"You can't take {obj}!")
+            return
+
+        print(f'You take the {obj}.')
+        game.player.add_inventory(item)
         game.room.remove_item(item)
-    search_and_exec(game, obj, game.room.items, take_fn)
+    if not search_and_exec(game, obj, game.room.items, take_fn):
+        print(f"You don't see {obj} here.")
+
+
+def command_status(game, obj):
+    print(colored(f'Your health: {game.player.health}', 'magenta'))
+    print(colored('Your inventory:', 'green'))
+    if game.player.inventory:
+        for item in game.player.inventory:
+            print(f' * {item.desc}')
+    else:
+            print(" * You're not carrying anything!")
+    if game.player.weapon:
+        print(colored(f'\nYour weapon: {game.player.weapon.desc}', 'red'))
 
 
 def command_catch(game, obj):
     def catch_fn(game, mob):
         print(f"You catch the {obj}! It bites your finger and escapes!")
 
-    search_and_exec(game, obj, game.room.mobs, catch_fn)
-
+    if not search_and_exec(game, obj, game.room.mobs, catch_fn):
+        print(f"You don't see {obj} here.")
 
 def command_hit(game, obj):
     def hit_fn(game, mob):
@@ -219,7 +258,8 @@ def command_hit(game, obj):
         else:
             print(f"Your health: {game.player.health}; {obj}'s health: {mob.health}")
 
-    search_and_exec(game, obj, game.room.mobs, hit_fn)
+    if not search_and_exec(game, obj, game.room.mobs, hit_fn):
+        print(f"You don't see {obj} here.")
 
 
 def command_use(game, obj):
@@ -229,8 +269,32 @@ def command_use(game, obj):
             print("You are teleported!")
             game.go_to_tag('statue')
             return
+
+        if item.damage:
+            weapon = game.player.weapon
+
+            print(f'You wield the {obj}.')
+            game.player.wield_item(item)
+            game.player.remove_inventory(item)
+            game.room.remove_item(item)
+
+            if weapon:
+                print(f'You put {weapon.desc} back in your pack.')
+                game.player.add_inventory(weapon)
+            return
+
+        if item.heal:
+            print(f'You use the {obj}. It heals you!')
+            game.player.health += item.heal
+            game.player.remove_inventory(item)
+            game.room.remove_item(item)
+            return
+
         print(f"You can't use {obj}.")
-    search_and_exec(game, obj, game.room.items, use_fn)
+
+    if not search_and_exec(game, obj, game.player.inventory, use_fn):
+        if not search_and_exec(game, obj, game.room.items, use_fn):
+            print(f"You don't see {obj} here.")
 
 
 def command_quit(game, obj):
@@ -245,6 +309,7 @@ def process_command(game, verb, obj):
             'catch': command_catch,
             'hit': command_hit,
             'use': command_use,
+            'status': command_status,
             'quit': command_quit
             }
 
@@ -261,6 +326,7 @@ def main():
     os.system('clear')
     print_welcome_message()
 
+    last_command = None
     while True:
         if game.player.health <= 0:
             print(colored("You are knocked out!", "red"))
@@ -270,6 +336,10 @@ def main():
         game.room.print()
         game.room.aggro(game)
         command = get_input()
+        if not command:
+            command = last_command
+        else:
+            last_command = command
 
         try:
             verb, obj = parse_command(command)
