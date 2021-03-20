@@ -140,7 +140,7 @@ def initialize_game():
              [],
              [Item('A mirror', 0, 0, 0, ['mirror'], False)],
              [])
-    room3 = Room('statue', 'You are in a large hallway.',
+    room3 = Room('hallway', 'You are in a large hallway.',
             [],
             [],
             [Mob(colored('A terrifying gargoyle!', 'cyan'), 2, 4, True,
@@ -160,9 +160,15 @@ def initialize_game():
                   Item('Chainmail', 0, 0, 2, ['chainmail'], True),
                   Item('Cheese', 0, 5, 0, ['cheese'], True),
                   Item('A cyan portal', 0, 0, 0, ['portal'], False)])])
+    room6 = Room('rubble', 'This room has been destroyed! There is rubble everywhere and blood on the walls.',
+            [],
+            [],
+            [Mob(colored('The wretch', 'green'), 3, 5, True, ['wretch', 'zombie'],
+                 [Item('Mystery meat', 0, 6, 0, ['meat'], True)])])
     room1.exits = [Exit('There is a large pit to the right', room2, ['pit', 'right'])]
     room2.exits = [Exit('Climb out of the pit', room1, ['climb', 'up'])]
-    room3.exits = [Exit('There is a door to the left', room4, ['left'])]
+    room3.exits = [Exit('There is a door to the left', room4, ['left']),
+                   Exit('There is a broken-open hole in the ceiling', room6, ['hole'])]
     room4.exits = [Exit('There is a large, scary gateway!', room5, ['gateway'])]
 
     player = Player('Meowcat', None, None, 20, [])
@@ -297,13 +303,13 @@ def command_use(game, obj):
         if 'mirror' in item.tags:
             print("You see a", colored("purple mist", 'magenta'), "enclose the room!")
             print("You are teleported!")
-            game.go_to_tag('statue')
+            game.go_to_tag('hallway')
             return
 
         if 'portal' in item.tags:
             print("You see a", colored("cyan flash", 'cyan'), "!")
             print("You are teleported!")
-            game.go_to_tag('statue')
+            game.go_to_tag('hallway')
             return
 
         if item.damage:
