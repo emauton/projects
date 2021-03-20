@@ -2,6 +2,7 @@
 
 import collections
 import os
+import random
 import sys
 from dataclasses import dataclass
 from typing import List, Any
@@ -18,20 +19,40 @@ class Exit:
 @dataclass
 class Item:
     desc: str
-    damage: int
+    damage: int  # Maximum damage a weapon can do
     heal: int
+    defense: int
     tags: List[str]
     takeable: bool
 
 @dataclass
 class Mob:
     desc: str
-    damage: int
+    damage: int  # Maximum damage this mob can do
     health: int
     aggro: bool
     tags: List[str]
-    drop: Item
+    drop: List[Item]
 
+def try_hit(a, b):
+    '''a is something with a "damage" field
+       b is something witha "health" field and maybe armour'''
+
+    defense = 0
+    if hasattr('b', 'armour'):
+        defense = b.armour.defense
+
+    coin = random.randint(0, 1)
+
+    if coin:
+        damage = random.randint(1, a.damage) - defense
+        if damage <= 0:
+            print(f"{b.desc}'s armour", colored('deflects', 'blue'), "a hit!")
+        else:
+            print(f"{b.desc} is hit for", colored(f'{damage}', 'red'), "!")
+            b.health -= damage
+    else:
+        print(f"{a.desc} attempts to hit but misses {b.desc}!")
 
 @dataclass
 class Room:
@@ -54,8 +75,7 @@ class Room:
         for m in self.mobs:
             if m.aggro:
                 print(f"{m.desc} is aggravated! It attacks you!")
-                game.player.health -= m.damage
-                print(f"Your health: {game.player.health}")
+                try_hit(m, game.player)
 
     def print(self):
         print()
@@ -81,11 +101,15 @@ class Room:
 class Player:
     desc: str
     weapon: Item
+    armour: Item
     health: int
     inventory: List[Item]
 
     def wield_item(self, item):
         self.weapon = item
+
+    def wear_item(self, item):
+        self.armour = item
 
     def add_inventory(self, item):
         self.inventory.append(item)
@@ -110,35 +134,37 @@ def initialize_game():
     dummy_room = Room('dummy', 'Room under construction', [], [], [])
     room1 = Room('start', 'You are in a dark room.',
              [],
-             [Item('A burning torch', 2, 0, ['torch'], True)],
+             [Item('A burning torch', 2, 0, 0, ['torch'], True)],
              [Mob(colored('A flying turtle!', 'green'), 2, 4, False, ['turtle'], None)])
     room2 = Room('mirror', 'You are in a large empty room with a golden mirror.',
              [],
-             [Item('A mirror', 0, 0, ['mirror'], False)],
+             [Item('A mirror', 0, 0, 0, ['mirror'], False)],
              [])
     room3 = Room('statue', 'You are in a large hallway.',
             [],
             [],
             [Mob(colored('A terrifying gargoyle!', 'cyan'), 2, 4, True,
                 ['gargoyle', 'statue'],
-                Item('Cat fud', 0, 5, ['food'], True))])
+                [Item('Cat fud', 0, 5, 0, ['food'], True)])])
     room4 = Room('ghost', ('You are in a brightly-lit room, with light pouring in from a hole in the ceiling. '
                            'It is covered in moss.'),
             [],
-            [Item('A rusty sword', 3, 0, ['sword'], True)],
+            [Item('A rusty sword', 3, 0, 0, ['sword'], True)],
             [Mob(colored('A ghoulish ghost!', 'cyan'), 3, 3, True, ['ghost', 'ghoul'], None)])
     room5 = Room('executioner', ('This is a massive room. In the centre there is a chopping block. '
                                  'It is covered in grisly blood!'),
             [],
             [],
             [Mob(colored('A giant axe-wielding rat named THE EXECUTIONER!', 'red'), 4, 10, True, ['executioner', 'rat'],
-                 [Item('A bloody axe', 4, 0, ['axe'], True)])])
+                 [Item('A bloody axe', 4, 0, 0, ['axe'], True),
+                  Item('Chainmail', 0, 0, 2, ['chainmail'], True),
+                  Item('Cheese', 0, 5, 0, ['cheese'], True)])])
     room1.exits = [Exit('There is a large pit to the right', room2, ['pit', 'right'])]
     room2.exits = [Exit('Climb out of the pit', room1, ['climb', 'up'])]
     room3.exits = [Exit('There is a door to the left', room4, ['left'])]
     room4.exits = [Exit('There is a large, scary gateway!', room5, ['gateway'])]
 
-    player = Player('You are Meowcat! So stronk.', None, 20, [])
+    player = Player('Meowcat', None, None, 20, [])
 
     return Game([dummy_room, room1, room2, room3, room4], room1, player)
 
@@ -229,6 +255,8 @@ def command_status(game, obj):
             print(" * You're not carrying anything!")
     if game.player.weapon:
         print(colored(f'\nYour weapon: {game.player.weapon.desc}', 'red'))
+    if game.player.armour:
+        print(colored(f'\nYour armour: {game.player.armour.desc}', 'blue'))
 
 
 def command_catch(game, obj):
@@ -246,15 +274,16 @@ def command_hit(game, obj):
         if not mob.aggro:
             print(f"You've just made an enemy! It hits you back!")
             mob.aggro = True
-        mob.health -= game.player.weapon.damage
+        try_hit(game.player.weapon, mob)
 
         if mob.health <= 0:
             print(colored(f"You have eliminated {obj}!", 'red'))
             print(f"Your health: {game.player.health}.")
             game.room.remove_mob(mob)
             if mob.drop:
-                print(f"{obj} drops {mob.drop.desc}!")
-                game.room.add_item(mob.drop)
+                for i in mob.drop:
+                    print(f"{obj} drops {i.desc}!")
+                    game.room.add_item(i)
         else:
             print(f"Your health: {game.player.health}; {obj}'s health: {mob.health}")
 
@@ -281,6 +310,19 @@ def command_use(game, obj):
             if weapon:
                 print(f'You put {weapon.desc} back in your pack.')
                 game.player.add_inventory(weapon)
+            return
+
+        if item.defense:
+            armour = game.player.armour
+
+            print(f'You wear the {obj}.')
+            game.player.wear_item(item)
+            game.player.remove_inventory(item)
+            game.room.remove_item(item)
+
+            if armour:
+                print(f'You put {armour.desc} back in your pack.')
+                game.player.add_inventory(armour)
             return
 
         if item.heal:
