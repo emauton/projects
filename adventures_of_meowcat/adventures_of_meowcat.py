@@ -158,7 +158,8 @@ def initialize_game():
             [Mob(colored('A giant axe-wielding rat named THE EXECUTIONER!', 'red'), 4, 10, True, ['executioner', 'rat'],
                  [Item('A bloody axe', 4, 0, 0, ['axe'], True),
                   Item('Chainmail', 0, 0, 2, ['chainmail'], True),
-                  Item('Cheese', 0, 5, 0, ['cheese'], True)])])
+                  Item('Cheese', 0, 5, 0, ['cheese'], True),
+                  Item('A cyan portal', 0, 0, 0, ['portal'], False)])])
     room1.exits = [Exit('There is a large pit to the right', room2, ['pit', 'right'])]
     room2.exits = [Exit('Climb out of the pit', room1, ['climb', 'up'])]
     room3.exits = [Exit('There is a door to the left', room4, ['left'])]
@@ -293,8 +294,14 @@ def command_hit(game, obj):
 
 def command_use(game, obj):
     def use_fn(game, item):
-        if item.desc == 'A mirror':
+        if 'mirror' in item.tags:
             print("You see a", colored("purple mist", 'magenta'), "enclose the room!")
+            print("You are teleported!")
+            game.go_to_tag('statue')
+            return
+
+        if 'portal' in item.tags:
+            print("You see a", colored("cyan flash", 'cyan'), "!")
             print("You are teleported!")
             game.go_to_tag('statue')
             return
