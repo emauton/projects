@@ -145,7 +145,7 @@ def initialize_game():
             [],
             [Mob(colored('A terrifying gargoyle!', 'cyan'), 2, 4, True,
                 ['gargoyle', 'statue'],
-                [Item('Cat fud', 0, 5, 0, ['food'], True)])])
+                [Item('Cat fud', 0, 5, 0, ['food', 'fud'], True)])])
     room4 = Room('ghost', ('You are in a brightly-lit room, with light pouring in from a hole in the ceiling. '
                            'It is covered in moss.'),
             [],
@@ -163,13 +163,23 @@ def initialize_game():
     room6 = Room('rubble', 'This room has been destroyed! There is rubble everywhere and blood on the walls.',
             [],
             [],
-            [Mob(colored('The wretch', 'green'), 3, 5, True, ['wretch', 'zombie'],
-                 [Item('Mystery meat', 0, 6, 0, ['meat'], True)])])
+            [Mob(colored('The zombie wretch', 'green'), 3, 5, True, ['wretch', 'zombie'],
+                 [Item('A chicken sandwich', 0, 6, 0, ['sandwich', 'chicken'], True)])])
+    room7 = Room('water', 'The room is half-submerged in water! There are pillars throughout.',
+            [],
+            [],
+            [Mob(colored('Angry fish', 'blue'), 1, 4, True, ['fish'],
+                 [Item('Tin of salmon', 0, 1, 0, ['salmon'], True)]),
+             Mob(colored('Angry fish', 'blue'), 1, 4, True, ['fish'],
+                 [Item('Tin of tuna', 0, 1, 0, ['tuna'], True)]),
+             Mob(colored('Angry fish', 'blue'), 1, 4, True, ['fish'],
+                 [Item('Tin of cod', 0, 1, 0, ['cod'], True)])])
     room1.exits = [Exit('There is a large pit to the right', room2, ['pit', 'right'])]
     room2.exits = [Exit('Climb out of the pit', room1, ['climb', 'up'])]
     room3.exits = [Exit('There is a door to the left', room4, ['left']),
                    Exit('There is a broken-open hole in the ceiling', room6, ['hole'])]
     room4.exits = [Exit('There is a large, scary gateway!', room5, ['gateway'])]
+    room6.exits = [Exit('There is a small door.', room7, ['door', 'exit'])]
 
     player = Player('Meowcat', None, None, 20, [])
 
