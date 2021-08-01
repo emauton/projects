@@ -135,7 +135,7 @@ def initialize_game():
     room1 = Room('start', 'You are in a dark room.',
              [],
              [Item('A burning torch', 2, 0, 0, ['torch'], True)],
-             [Mob(colored('A flying turtle!', 'green'), 2, 4, False, ['turtle'], None)])
+             [Mob(colored('A flying turtle!', 'green'), 2, 4, False, ['turtle'], [])])
     room2 = Room('mirror', 'You are in a large empty room with a golden mirror.',
              [],
              [Item('A mirror', 0, 0, 0, ['mirror'], False)],
@@ -150,7 +150,7 @@ def initialize_game():
                            'It is covered in moss.'),
             [],
             [Item('A rusty sword', 3, 0, 0, ['sword'], True)],
-            [Mob(colored('A ghoulish ghost!', 'cyan'), 3, 3, True, ['ghost', 'ghoul'], None)])
+            [Mob(colored('A ghoulish ghost!', 'cyan'), 3, 3, True, ['ghost', 'ghoul'], [])])
     room5 = Room('executioner', ('This is a massive room. In the centre there is a chopping block. '
                                  'It is covered in grisly blood!'),
             [],
@@ -169,21 +169,33 @@ def initialize_game():
             [],
             [],
             [Mob(colored('Angry fish', 'blue'), 1, 4, True, ['fish'],
-                 [Item('Tin of salmon', 0, 1, 0, ['salmon'], True)]),
+                 [Item('Tin of salmon', 0, 2, 0, ['salmon'], True)]),
              Mob(colored('Angry fish', 'blue'), 1, 4, True, ['fish'],
-                 [Item('Tin of tuna', 0, 1, 0, ['tuna'], True)]),
+                 [Item('Tin of tuna', 0, 2, 0, ['tuna'], True)]),
              Mob(colored('Angry fish', 'blue'), 1, 4, True, ['fish'],
-                 [Item('Tin of cod', 0, 1, 0, ['cod'], True)])])
+                 [Item('Tin of cod', 0, 2, 0, ['cod'], True)])])
+    room8 = Room('ice', 'This room is frozen solid. Icy bones are scattered around the floor.',
+            [],
+            [],
+            [Mob(colored('The frost wretch', 'cyan'), 3, 5, True, ['wretch', 'frost'],
+                 [Item('The Chill Blade', 5, 0, 0, ['chill', 'blade'], True)])])
+    room9 = Room('cliff', "You've exited the dungeon, but you are on an icy cliff. Alpine trees grow all around.",
+            [],
+            [],
+            [])
+
     room1.exits = [Exit('There is a large pit to the right', room2, ['pit', 'right'])]
     room2.exits = [Exit('Climb out of the pit', room1, ['climb', 'up'])]
     room3.exits = [Exit('There is a door to the left', room4, ['left']),
                    Exit('There is a broken-open hole in the ceiling', room6, ['hole'])]
     room4.exits = [Exit('There is a large, scary gateway!', room5, ['gateway'])]
     room6.exits = [Exit('There is a small door.', room7, ['door', 'exit'])]
+    room7.exits = [Exit('A glowing blue passage leads away to the north; an icy chill radiates from it.', room8, ['north', 'passage'])]
+    room8.exits = [Exit('A wall that has been broken down by the wretch. Daylight streams in.', room9, ['broken', 'wall'])]
 
     player = Player('Meowcat', None, None, 20, [])
 
-    return Game([dummy_room, room1, room2, room3, room4], room1, player)
+    return Game([dummy_room, room1, room2, room3, room4, room5, room6, room7, room8, room9], room1, player)
 
 
 def print_welcome_message():
@@ -219,6 +231,8 @@ def parse_command(command):
         obj = None
     elif len(words) == 2:
         verb, obj = words
+    elif len(words) == 3:
+        verb, *obj = words
     else:
         raise ParseError
 
@@ -233,6 +247,45 @@ def search_and_exec(game, obj, things, fn):
             found = True
             break
     return found
+
+
+def command_admin(game, args):
+    if isinstance(args, list):
+        verb, obj = args
+    else:
+        verb = args
+
+    if verb == 'hp':
+        hp = int(obj)
+        game.player.health = hp
+    elif verb == 'rooms':
+        for r in game.all_rooms:
+            print(f'tag: "{r.tag}"; description: "{r.desc}"')
+    elif verb == 'warp':
+        game.go_to_tag(obj)
+    elif verb == 'get':
+        def clone_fn(game, item):
+            if not item.takeable:
+                print(f"You can't take {obj}!")
+                return
+
+            print(f'You clone the {obj} as an admin! It is in your inventory.')
+            game.player.add_inventory(item)
+
+        found = False
+        for r in game.all_rooms:
+            if search_and_exec(game, obj, r.items, clone_fn):
+                found = True
+                break
+            else:
+                for m in r.mobs:
+                   if search_and_exec(game, obj, m.drop, clone_fn):
+                       found = True
+                       break
+        if not found:
+            print(f"{obj} does not exist in any room, or mob drop list.")
+    else:
+        print('admin commands: hp, rooms, warp, get')
 
 
 def command_go(game, obj):
@@ -369,6 +422,7 @@ def command_quit(game, obj):
 
 def process_command(game, verb, obj):
     command_table = {
+            'admin': command_admin,
             'go': command_go,
             'take': command_take,
             'catch': command_catch,
@@ -409,8 +463,8 @@ def main():
         try:
             verb, obj = parse_command(command)
             process_command(game, verb, obj)
-        except Exception:
-            print("I don't get it! Use '<verb> <object>' to help me understand.")
+        except Exception as e:
+            print(f"I don't get it! Use '<verb> <object>' to help me understand. {e}")
 
 
 main()
